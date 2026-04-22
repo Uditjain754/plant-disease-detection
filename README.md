@@ -11,11 +11,12 @@ User-Friendly Interface: Clean, intuitive UI with image previews and visualizati
 Multiple Plant Support: Currently supports tomatoes, potatoes, and bell peppers
 High Accuracy: 96.5% accuracy on test datasets
 Example Images: Try the application with pre-loaded example images
+
+
 🧪 Supported Plant Diseases
 The model can currently identify the following plants and diseases:
 
 Tomato:
-
 Healthy
 Bacterial Spot
 Early Blight
@@ -26,15 +27,17 @@ Spider Mites
 Target Spot
 Yellow Leaf Curl Virus
 Mosaic Virus
-Potato:
 
+
+Potato:
 Healthy
 Early Blight
 Late Blight
-Bell Pepper:
 
+Bell Pepper:
 Healthy
 Bacterial Spot
+
 🔧 Model Architecture
 The application uses a custom CNN architecture with the following components:
 
