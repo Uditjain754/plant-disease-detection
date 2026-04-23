@@ -4,6 +4,6 @@ torchvision
 pandas
 matplotlib
 numpy
-pillow
+Pillow
 scikit-learn
 tqdm
