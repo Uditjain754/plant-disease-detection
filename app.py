@@ -14,20 +14,17 @@ warnings.filterwarnings("ignore")
 # ---------------- LOAD MODEL ---------------- #
 @st.cache_resource
 def load_model_resources():
-    # Load class names
+    import json
+
     with open("class_names.json", "r") as f:
-        import json
         class_names = json.load(f)
 
-    # Load label encoder
     with open("label_encoder.pkl", "rb") as f:
         label_encoder = pickle.load(f)
 
-    # Load transform
     with open("inference_transform.pkl", "rb") as f:
         transform = pickle.load(f)
 
-    # Load model
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model = PlantDiseaseModel(num_classes=len(class_names))
     model.load_state_dict(torch.load("best_model.pth", map_location=device))
@@ -65,19 +62,32 @@ def main():
     body {
         background-color: #f5f7f6;
     }
+
     .title {
         text-align: center;
-        font-size: 40px;
+        font-size: 42px;
         font-weight: bold;
         color: #2e7d32;
     }
+
     .card {
         background-color: white;
         padding: 20px;
         border-radius: 12px;
         box-shadow: 0px 4px 10px rgba(0,0,0,0.08);
-        margin-bottom: 15px;
+        margin-bottom: 20px;
     }
+
+    /* REMOVE CURSOR + INTERACTION */
+    [data-testid="stTable"] {
+        pointer-events: none;
+        user-select: none;
+    }
+
+    [data-testid="stTable"] * {
+        caret-color: transparent !important;
+    }
+
     </style>
     """, unsafe_allow_html=True)
 
@@ -102,24 +112,20 @@ def main():
 
         uploaded_file = st.file_uploader("Choose Image", type=["jpg", "jpeg", "png"])
 
-        st.markdown("### Try Example")
-        if st.button("Healthy Tomato"):
-            uploaded_file = "images/examples/tomato_healthy.jpg"
-
-        if st.button("Potato Late Blight"):
-            uploaded_file = "images/examples/Potato_Late_blight.jpeg"
-
-        if st.button("Pepper Bacterial Spot"):
-            uploaded_file = "images/examples/Pepper_bell_Bacterial_spot.jpeg"
-
         st.markdown("</div>", unsafe_allow_html=True)
 
-        # Diseases list
+        # ----------- DROPDOWN MENU ----------- #
         st.markdown("<div class='card'>", unsafe_allow_html=True)
-        st.subheader("Available Diseases")
 
-        formatted = [c.replace("_", " ").title() for c in class_names]
-        st.dataframe(pd.DataFrame(formatted, columns=["Diseases"]))
+        with st.expander("📋 Available Diseases", expanded=False):
+            formatted = [c.replace("_", " ").title() for c in class_names]
+
+            df = pd.DataFrame({
+                "Available Diseases": formatted
+            })
+
+            st.table(df)
+
         st.markdown("</div>", unsafe_allow_html=True)
 
     # ----------- RIGHT PANEL ----------- #
@@ -128,18 +134,8 @@ def main():
         st.subheader("Image Preview")
 
         if uploaded_file:
-            if isinstance(uploaded_file, str):
-                image = Image.open(uploaded_file)
-                st.image(image, use_container_width=True)
-
-                with open(uploaded_file, "rb") as f:
-                    uploaded_file = type('obj', (object,), {
-                        'getvalue': lambda: f.read()
-                    })
-
-            else:
-                image = Image.open(uploaded_file)
-                st.image(image, use_container_width=True)
+            image = Image.open(uploaded_file)
+            st.image(image, use_container_width=True)
 
             # Prediction
             class_name, confidence, top_classes, top_probs = predict(
